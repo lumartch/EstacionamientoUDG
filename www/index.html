@@ -10,12 +10,77 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
         <title>Estacionamiento UDG</title>
         <script>
+            // Variables para Template USER
+            var code = "";
+            var name = "";
+            var career = "";
+            // Función de carga a la página, sirve como Delay para el Splash Screen
             window.onload=function(){
                 setTimeout(function(){ 
                     document.getElementById('splash').style.display= "block";
                     document.querySelector('#myNavigator').pushPage('index.html');
                 },3500)
             }
+            // Función para iniciar sesión
+            function login(){
+                codigo = document.getElementById("code").value;
+                nip = document.getElementById("pass").value;
+                if(codigo == "" || nip == ""){
+                    ons.notification.alert("Llene los datos correspondientes para el inicio de sesión.");
+                    return;
+                }
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                if(xhttp.readyState == 4 && this.status == 200){
+                    var cadena = xhttp.responseText;
+                    var array = cadena.split(',');
+                    if(array[0] == 'A'){  
+                        code = array[1];
+                        name = array[2];
+                        career = array[4];
+                        var dialog = document.getElementById('altaDialog');
+                        if (dialog) {
+                            dialog.show();
+                        } else {
+                            ons.createElement('alert-dialog.html', { append: true })
+                            .then(function(dialog) {
+                                dialog.show();
+                            });
+                        }
+                    }
+                    else {
+                        ons.notification.alert("Usuario o contraseña erronea. Intente de nuevo.");
+                    }
+                }
+                };
+                xhttp.open("GET", "http://dcc.000webhostapp.com/2018/datosudeg.php?codigo="+ codigo + "&nip=" + nip, true);
+                xhttp.send();
+            }
+            // Función interfaz para dar de alta a un usuario nuevo
+            function altaNuevo(){
+                var c = document.getElementById("inCode").value;
+                var p = document.getElementById("inPlacas").value;
+                var t = document.getElementById("inTel").value;
+                var pass = document.getElementById("inPass").value;
+                if(c == "" || p == "" || t == "" || pass == ""){
+                    ons.notification.alert("Llene los datos correspondientes para dar de alta al usuario.");
+                    return;
+                }
+            }
+            // Función interfaz para dar de alta a un usuario UDG
+            function altaUDG(placas, telefono){
+                if(placas == "" || telefono == "" ){
+                    ons.notification.alert("Llene los datos correspondientes para dar de alta el coche.");
+                    return;
+                }
+            }
+            // Código para ocultar el Alert de Alta UDG
+            var hideAlertDialog = function() {
+            document
+                .getElementById('altaDialog')
+                .hide();
+            };
+
         </script>
     </head>
     <body>
@@ -24,14 +89,14 @@
             <ons-page id="splash">
                 <ons-card>
                     <center>
-                    <img src="https://www.keybps.com/wp-content/uploads/2018/02/Estacionamiento.png" width="100px" height="100px" alt=""/>
+                    <img src="https://www.keybps.com/wp-content/uploads/2018/02/Estacionamiento.png" height="200" width="200"/>
                     <br>
-                    <h1>Park App</h1>
+                    <h1><i>Park App</i></h1>
                     </center>
                 </ons-card>
                 <ons-card>
                     <center>
-                    <h3>Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</h3>
+                    <h3><b>Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</b></h3>
                     </center>
                 </ons-card>
             </ons-page>
@@ -44,8 +109,8 @@
             </ons-toolbar>
             <ons-card>
                 <center>
-                    <h1>Horario UDG</h1>
-                    <img src="https://www.mexicoescultura.com/galerias/espacios/principal/udg.jpg" height="200" width="200">
+                    <h1>Estacionamiento CUCEI</h1>
+                    <img src="http://cdn.onlinewebfonts.com/svg/img_569117.png" height="200" width="200">
                 </center>
             </ons-card>
             <ons-card>
@@ -55,10 +120,60 @@
                     <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
                     <br><br>
                     <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
+                    <br><br>
+                    <label onclick="document.querySelector('#myNavigator').pushPage('newUser.html');"><h4><b>Nuevo usuario</b></h4></label>
                 </center>
             </ons-card>
             </ons-page>
         </template>
+
+        <template id="alert-dialog.html">
+            <ons-alert-dialog id="altaDialog" modifier="rowfooter" cancelable animation="default">
+                <div class="alert-dialog-title"><b><h3>Alta de coche</h3></b></div>
+                <div class="alert-dialog-content">
+                <center>HOLA ALUMNO<br><i><label id="nm"></label></i></center>
+                <script>
+                    document.getElementById("nm").innerHTML = name;   
+                </script>
+                <br>
+                <ons-input input-id="inPl" placeholder="Placas" type="text" modifier="underbar"></ons-input>
+                <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
+                </div>
+                <div class="alert-dialog-footer">
+                    <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)">Alta</ons-alert-dialog-button>
+                    <ons-alert-dialog-button onclick="hideAlertDialog()">Cancelar</ons-alert-dialog-button>
+                </div>
+            </ons-alert-dialog>
+        </template>
+
+        <template id="newUser.html">
+                <ons-page id="newUser">
+                    <ons-toolbar>
+                    <div class="left"><ons-back-button>Regresar</ons-back-button></div>
+                    <div class="center"><ons-icon size="20px" icon="fa-file"></ons-icon><label>  Registro de usuario nuevo</label></div>
+                    </ons-toolbar>
+                    <ons-card>
+                        <p class="intro">
+                            <center>
+                            <ons-list-header>Ingrese los datos correspondientes</ons-list-header>
+                            <ons-list-item>
+                                <ons-input input-id="inCode" placeholder="Código" type="text" modifier="underbar" ></ons-input>
+                            </ons-list-item>
+                            <ons-list-item>
+                                <ons-input input-id="inPlacas" placeholder="Placas" type="text" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <ons-list-item>
+                                <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <ons-list-item>
+                                    <ons-input input-id="inPass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <br><br>
+                            <ons-button id="altaButton" modifier="material" onclick="altaNuevo()">Alta</ons-button>
+                            </center>
+                        </p>
+                    </ons-card>
+            </template>
         
         <script type="text/javascript" src="cordova.js"></script>
     </body>
