@@ -7,9 +7,59 @@
         <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
         <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
         <link rel="shortcut icon" type="image/x-icon" href="https://www.mexicoescultura.com/galerias/espacios/principal/udg.jpg" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
         <title>Estacionamiento UDG</title>
+        <script>
+            window.onload=function(){
+                setTimeout(function(){ 
+                    document.getElementById('splash').style.display= "block";
+                    document.querySelector('#myNavigator').pushPage('index.html');
+                },3500)
+            }
+        </script>
     </head>
     <body>
+        <ons-navigator swipeable id="myNavigator" page="splash.html" animation="slide" ></ons-navigator>
+        <template id="splash.html">
+            <ons-page id="splash">
+                <ons-card>
+                    <center>
+                    <img src="https://www.keybps.com/wp-content/uploads/2018/02/Estacionamiento.png" width="100px" height="100px" alt=""/>
+                    <br>
+                    <h1>Park App</h1>
+                    </center>
+                </ons-card>
+                <ons-card>
+                    <center>
+                    <h3>Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</h3>
+                    </center>
+                </ons-card>
+            </ons-page>
+        </template>
+
+        <template id="index.html">
+            <ons-page id="index">
+            <ons-toolbar>
+                <div class="center"><ons-icon size="20px" icon="md-home"></ons-icon>  <label>Universidad de Guadalajara</label></div>
+            </ons-toolbar>
+            <ons-card>
+                <center>
+                    <h1>Horario UDG</h1>
+                    <img src="https://www.mexicoescultura.com/galerias/espacios/principal/udg.jpg" height="200" width="200">
+                </center>
+            </ons-card>
+            <ons-card>
+                <center>
+                    <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar" ></ons-input>
+                    <br><br>
+                    <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
+                    <br><br>
+                    <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
+                </center>
+            </ons-card>
+            </ons-page>
+        </template>
+        
         <script type="text/javascript" src="cordova.js"></script>
     </body>
 </html>
