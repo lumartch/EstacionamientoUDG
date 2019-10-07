@@ -77,10 +77,10 @@
                     ons.notification.alert("Llene los datos correspondientes para dar de alta el coche.");
                     return;
                 }
-                var np = 322;
+                var pass = 322;
                 // Código para ocultar el Alert de Alta UDG
                 document.getElementById('altaDialog').hide();
-                alta(code, name, placas, telefono, np);
+                alta(code, name, placas, telefono, pass);
             }
             function alta(c, n, p, t, pass){
                 var xhttp = new XMLHttpRequest();
@@ -104,131 +104,182 @@
             }
             // Código para ocultar el Alert de Alta UDG
             var hideAlertDialog = function() {
-            document
-                .getElementById('altaDialog')
-                .hide();
+            document.getElementById('altaDialog').hide();
             };
         </script>
+        <style>
+            .toolbar {
+                background-color:rgb(26, 26, 26);
+            }
+            .card{
+                background-color:rgb(26, 26, 26);;
+                color:lightcyan;
+            }
+            .list-header{
+                background-color: rgb(26, 26, 26);
+                color:lightcyan;
+            }
+            .list-item{
+                background-color: rgb(51, 51, 51);
+                color:lightcyan;
+            }
+            .button{
+                background-color: rgb(13, 13, 13);
+                color:lightcyan;
+            }
+            h1{
+                color:lightcyan;
+            }
+            .white{
+                color:lightcyan;
+            }
+            .back-button{
+                color:white;
+                background-image: white;
+            }
+            #code { color:white; }
+            #pass { color:white; }
+            #inCode { color:white; }
+            #inName { color:white; }
+            #inPlacas { color:white; }
+            #inPl { color: white; }
+            #inTel { color:white; }
+            #inPass { color:white; }
+            #alTitle {background-color: rgb(26, 26, 26);
+                color:lightcyan;}
+        </style>
     </head>
     <body>
         <ons-navigator swipeable id="myNavigator" page="splash.html" animation="slide" ></ons-navigator>
         <template id="splash.html">
-            <ons-page id="splash">
-                <ons-card>
+            <ons-page id="splash" >
+                <div class="background" style="background-color:black;"></div>
+                <div class="content">
+                <!--<ons-card>-->
                     <center>
                     <img src="https://www.keybps.com/wp-content/uploads/2018/02/Estacionamiento.png" height="200" width="200"/>
                     <br>
-                    <h1><i>Park App</i></h1>
+                    <h1><i style="color: cyan;">Park App</i></h1>
                     </center>
-                </ons-card>
-                <ons-card>
+                <!--</ons-card>
+                <ons-card>-->
                     <center>
-                    <h3><b>Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</b></h3>
+                    <h3><b style="color: cyan;">Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</b></h3>
                     </center>
-                </ons-card>
+                <!--</ons-card>-->
+                </div>
             </ons-page>
         </template>
 
         <template id="index.html">
             <ons-page id="index">
-            <ons-toolbar>
-                <div class="center"><ons-icon size="20px" icon="md-home"></ons-icon>  <label>Universidad de Guadalajara</label></div>
-            </ons-toolbar>
-            <ons-card>
-                <center>
-                    <h1>Estacionamiento CUCEI</h1>
-                    <img src="http://cdn.onlinewebfonts.com/svg/img_569117.png" height="200" width="200">
-                </center>
-            </ons-card>
-            <ons-card>
-                <center>
-                    <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar" ></ons-input>
-                    <br><br>
-                    <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
-                    <br><br>
-                    <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
-                    <br><br>
-                    <label onclick="document.querySelector('#myNavigator').pushPage('newUser.html');"><h4><b>Nuevo usuario</b></h4></label>
-                </center>
-            </ons-card>
+            <div class="background" style="background-color:black;"></div>
+            <div class="content">
+                <ons-toolbar>
+                    <div class="center"><ons-icon size="20px" icon="md-home" class="white"></ons-icon>  <label class="white">Universidad de Guadalajara</label></div>
+                </ons-toolbar>
+                <ons-card style="margin-top: 1.5cm;">
+                    <center>
+                        <h1>Estacionamiento CUCEI</h1>
+                        <img src="http://cdn.onlinewebfonts.com/svg/img_569117.png" height="200" width="200">
+                    </center>
+                </ons-card>
+                <ons-card>
+                    <center>
+                        <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar" ></ons-input>
+                        <br><br>
+                        <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
+                        <br><br>
+                        <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
+                        <br><br>
+                        <label onclick="document.querySelector('#myNavigator').pushPage('newUser.html');"><h4><b>Nuevo usuario</b></h4></label>
+                    </center>
+                </ons-card>
+            </div>
             </ons-page>
         </template>
 
         <template id="alert-dialog.html">
             <ons-alert-dialog id="altaDialog" modifier="rowfooter" cancelable animation="default">
-                <div class="alert-dialog-title"><b><h3>Alta de coche</h3></b></div>
-                <div class="alert-dialog-content">
-                <center>HOLA ALUMNO<br><i><label id="nm"></label></i></center>
-                <script>
-                    document.getElementById("nm").innerHTML = name;   
-                </script>
-                <br>
-                <ons-input input-id="inPl" placeholder="Placas" type="text" modifier="underbar"></ons-input>
-                <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
+                <div id="alTitle" class="alert-dialog-title" ><b><h3>Alta de coche</h3></b></div>
+                <div class="alert-dialog-content" style="background-color: rgb(26, 26, 26); color:white;">
+                    <center>HOLA USUARIO<br><i><label id="nm"></label></i></center>
+                    <script>
+                        document.getElementById("nm").innerHTML = name;   
+                    </script>
+                    <br>
+                    <ons-input input-id="inPl" placeholder="Placas" type="text" modifier="underbar" style="color: white;"></ons-input>
+                    <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar" style="color:white;"></ons-input>
                 </div>
-                <div class="alert-dialog-footer">
-                    <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)">Alta</ons-alert-dialog-button>
-                    <ons-alert-dialog-button onclick="hideAlertDialog()">Cancelar</ons-alert-dialog-button>
+                <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
+                    <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)" style="color:white;">Alta</ons-alert-dialog-button>
+                    <ons-alert-dialog-button onclick="hideAlertDialog()" style="color:white;">Cancelar</ons-alert-dialog-button>
                 </div>
             </ons-alert-dialog>
         </template>
 
         <template id="newUser.html">
             <ons-page id="newUser">
-                <ons-toolbar>
-                <div class="left"><ons-back-button>Regresar</ons-back-button></div>
-                <div class="center"><ons-icon size="20px" icon="fa-file"></ons-icon><label>  Registro de usuario nuevo</label></div>
-                </ons-toolbar>
-                <ons-card>
-                    <p class="intro">
-                        <center>
-                        <ons-list-header>Ingrese los datos correspondientes</ons-list-header>
-                        <ons-list-item>
-                            <ons-input input-id="inCode" placeholder="Código" type="text" modifier="underbar" ></ons-input>
-                        </ons-list-item>
-                        <ons-list-item>
-                                <ons-input input-id="inName" placeholder="Nombre" type="text" modifier="underbar" ></ons-input>
+                <div class="background" style="background-color:black;"></div>
+                <div class="content">
+                    <ons-toolbar>
+                        <div class="left"><ons-back-button id="rNew">Regresar</ons-back-button></div>
+                        <div class="center"><ons-icon size="20px" icon="fa-file" class="white"></ons-icon><label class="white">  Registro de usuario nuevo</label></div>
+                    </ons-toolbar>
+                    <ons-card style="margin-top: 1.5cm;">
+                        <p class="intro">
+                            <center>
+                            <ons-list-header>Ingrese los datos correspondientes</ons-list-header>
+                            <ons-list-item>
+                                <ons-input input-id="inCode" placeholder="Código" type="text" modifier="underbar" ></ons-input>
                             </ons-list-item>
-                        <ons-list-item>
-                            <ons-input input-id="inPlacas" placeholder="Placas" type="text" modifier="underbar"></ons-input>
-                        </ons-list-item>
-                        <ons-list-item>
-                            <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
-                        </ons-list-item>
-                        <ons-list-item>
-                                <ons-input input-id="inPass" placeholder="Contraseña/NIP" type="password" modifier="underbar"></ons-input>
-                        </ons-list-item>
-                        <br><br>
-                        <ons-button id="altaButton" modifier="material" onclick="altaNuevo()">Alta</ons-button>
-                        </center>
-                    </p>
-                </ons-card>
+                            <ons-list-item>
+                                    <ons-input input-id="inName" placeholder="Nombre" type="text" modifier="underbar" ></ons-input>
+                                </ons-list-item>
+                            <ons-list-item>
+                                <ons-input input-id="inPlacas" placeholder="Placas" type="text" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <ons-list-item>
+                                <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <ons-list-item>
+                                    <ons-input input-id="inPass" placeholder="Contraseña/NIP" type="password" modifier="underbar"></ons-input>
+                            </ons-list-item>
+                            <br><br>
+                            <ons-button id="altaButton" modifier="material" onclick="altaNuevo()">Alta</ons-button>
+                            </center>
+                        </p>
+                    </ons-card>
+                </div>
             </ons-page>
         </template>
 
         <template id="maps.html">
             <ons-page id="maps" >
-                <ons-toolbar>
-                    <div class="left"><ons-back-button>Regresar</ons-back-button></div>
-                    <div class="center"><ons-icon size="20px" icon="fa-car"></ons-icon><label>  Mapa del estacionamiento</label></div>
-                </ons-toolbar>
-                <ons-card>
-                    <center>HOLA USUARIO<br><i><label id="nameMap"></label></i></center>
+                <div class="background" style="background-color:black;"></div>
+                <div class="content">
+                    <ons-toolbar>
+                        <div class="left"><ons-back-button>Salir</ons-back-button></div>
+                        <div class="center"><ons-icon size="20px" icon="fa-car" class="white"></ons-icon><label class="white">  Mapa del estacionamiento</label></div>
+                    </ons-toolbar>
+                    <ons-card style="margin-top: 1.5cm;">
+                        <center>HOLA USUARIO<br><i><label id="nameMap"></label></i></center>
+                        <script>
+                            document.getElementById("nameMap").innerHTML = name;   
+                        </script>
+                    </ons-card>
+                    <div id="mapa" style="width: 96%; height: 86%; align-self: center; margin-left: 9px; margin-right: 9px;">
+                    </div>
                     <script>
-                        document.getElementById("nameMap").innerHTML = name;   
-                    </script>
-                </ons-card>
-                <div id="mapa" style="width: 96%; height: 86%; align-self: center; margin-left: 9px; margin-right: 9px;">
-                </div>
-                <script>
-                    mapboxgl.accessToken = 'pk.eyJ1IjoibHVtYXJ0Y2giLCJhIjoiY2sxZmwyN3V0MGx5ZDNobjE4bjZmd3diOSJ9.n_Jpif6pmEwEMjS-RH51kQ';
-                    var map = new mapboxgl.Map({
-                    container: 'mapa', // container id
-                    style: 'mapbox://styles/mapbox/dark-v10', // stylesheet location
-                    center: [-103.324, 20.655], // starting position [lng, lat]
-                    zoom: 16 // starting zoom
-                    });
-                </script>    
+                        mapboxgl.accessToken = 'pk.eyJ1IjoibHVtYXJ0Y2giLCJhIjoiY2sxZmwyN3V0MGx5ZDNobjE4bjZmd3diOSJ9.n_Jpif6pmEwEMjS-RH51kQ';
+                        var map = new mapboxgl.Map({
+                        container: 'mapa', // container id
+                        style: 'mapbox://styles/mapbox/dark-v10', // stylesheet location
+                        center: [-103.324, 20.655], // starting position [lng, lat]
+                        zoom: 16 // starting zoom
+                        });
+                    </script>  
+                </div>  
             </ons-page>
         </template>
         
