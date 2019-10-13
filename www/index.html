@@ -60,13 +60,17 @@
             }
             // Función interfaz para dar de alta a un usuario nuevo
             function altaNuevo(){
-                var c = document.getElementById("inCode").value;
+                var c = document.getElementById("inCode").innerHTML;
                 var n = document.getElementById("inName").value;
                 var p = document.getElementById("inPlacas").value;
                 var t = document.getElementById("inTel").value;
                 var pass = document.getElementById("inPass").value;
-                if(c == "" || p == "" || t == "" || pass == ""){
+                if(c == "" || n == "" || p == "" || t == "" || pass == ""){
                     ons.notification.alert("Llene los datos correspondientes para dar de alta al usuario.");
+                    return;
+                }
+                if(t < 1000000000 || t > 9999999999){
+                    ons.notification.alert("El formato del Teléfono es el incorrecto, deben ser 10 números.");
                     return;
                 }
                 alta(c, n, p, t, pass);
@@ -75,6 +79,10 @@
             function altaUDG(placas, telefono){
                 if(placas == "" || telefono == "" ){
                     ons.notification.alert("Llene los datos correspondientes para dar de alta el coche.");
+                    return;
+                }
+                if(telefono < 1000000000 || telefono > 9999999999){
+                    ons.notification.alert("El formato del Teléfono es el incorrecto, deben ser 10 números.");
                     return;
                 }
                 var pass = 322;
@@ -186,7 +194,7 @@
                 </ons-card>
                 <ons-card>
                     <center>
-                        <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar" ></ons-input>
+                        <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar"></ons-input>
                         <br><br>
                         <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
                         <br><br>
@@ -209,7 +217,7 @@
                     </script>
                     <br>
                     <ons-input input-id="inPl" placeholder="Placas" type="text" modifier="underbar" style="color: white;"></ons-input>
-                    <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar" style="color:white;"></ons-input>
+                    <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" style="color:white;" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></ons-input>
                 </div>
                 <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
                     <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)" style="color:white;">Alta</ons-alert-dialog-button>
@@ -231,7 +239,13 @@
                             <center>
                             <ons-list-header>Ingrese los datos correspondientes</ons-list-header>
                             <ons-list-item>
-                                <ons-input input-id="inCode" placeholder="Código" type="text" modifier="underbar" ></ons-input>
+                                <label class="white">Código: </label> <label id="inCode" class="white"></label>
+                                <script>
+                                    var min = Math.ceil(1000);
+                                    var max = Math.floor(5000);
+                                    var res =  Math.floor(Math.random() * (max - min + 1)) + min;
+                                    document.getElementById("inCode").innerHTML = res.toString();
+                                </script>
                             </ons-list-item>
                             <ons-list-item>
                                     <ons-input input-id="inName" placeholder="Nombre" type="text" modifier="underbar" ></ons-input>
@@ -240,7 +254,7 @@
                                 <ons-input input-id="inPlacas" placeholder="Placas" type="text" modifier="underbar"></ons-input>
                             </ons-list-item>
                             <ons-list-item>
-                                <ons-input input-id="inTel" placeholder="Teléfono" type="text" modifier="underbar"></ons-input>
+                                <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></ons-input>
                             </ons-list-item>
                             <ons-list-item>
                                     <ons-input input-id="inPass" placeholder="Contraseña/NIP" type="password" modifier="underbar"></ons-input>
@@ -252,6 +266,7 @@
                     </ons-card>
                 </div>
             </ons-page>
+            
         </template>
 
         <template id="maps.html">
@@ -268,17 +283,26 @@
                             document.getElementById("nameMap").innerHTML = name;   
                         </script>
                     </ons-card>
-                    <div id="mapa" style="width: 96%; height: 86%; align-self: center; margin-left: 9px; margin-right: 9px;">
+                    <div class="mapouter">
+                        <div class="gmap_canvas">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d933.3412607245299!2d-103.32553151192371!3d20.654722554036248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b23abb6f2e57%3A0xc3806926efc93100!2sOl%C3%ADmpica%2C%2044430%20Guadalajara%2C%20Jalisco!5e0!3m2!1sen!2smx!4v1570555170670!5m2!1sen!2smx" width="500" height="500" frameborder="0" style="border:0;" >
+                                </iframe>
+                        </div>
+                        <style>
+                        .mapouter{
+                            position:relative;
+                            text-align:right;
+                            height:500px;
+                            width:600px;
+                            }
+                        .gmap_canvas {
+                            overflow:hidden;
+                            background:none!important;
+                            height:500px;
+                            width:400px;
+                            }
+                        </style>
                     </div>
-                    <script>
-                        mapboxgl.accessToken = 'pk.eyJ1IjoibHVtYXJ0Y2giLCJhIjoiY2sxZmwyN3V0MGx5ZDNobjE4bjZmd3diOSJ9.n_Jpif6pmEwEMjS-RH51kQ';
-                        var map = new mapboxgl.Map({
-                        container: 'mapa', // container id
-                        style: 'mapbox://styles/mapbox/dark-v10', // stylesheet location
-                        center: [-103.324, 20.655], // starting position [lng, lat]
-                        zoom: 16 // starting zoom
-                        });
-                    </script>  
                 </div>  
             </ons-page>
         </template>
