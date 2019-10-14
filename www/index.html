@@ -12,15 +12,16 @@
         <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.2/mapbox-gl.css' rel='stylesheet' />
         <title>Estacionamiento UDG</title>
         <script>
-            // Variables para Template USER
-            var code = "";
-            var name = "";
-            var career = "";
             // Función de carga a la página, sirve como Delay para el Splash Screen
             window.onload=function(){
                 setTimeout(function(){ 
                     document.getElementById('splash').style.display= "block";
-                    document.querySelector('#myNavigator').pushPage('index.html');
+                    //Carga la página dependiendo de los datos en el LocalStorage
+                    if (localStorage.getItem('usuario') == null) {
+                        document.querySelector('#myNavigator').pushPage('index.html');
+                    } else {
+                        document.querySelector('#myNavigator').pushPage('maps.html');
+                    }
                 },3500)
             }
             // Función para iniciar sesión
@@ -40,6 +41,7 @@
                         code = array[1];
                         name = array[2];
                         career = array[4];
+                        document.querySelector('#myNavigator').pushPage('maps.html');
                         var dialog = document.getElementById('altaDialog');
                         if (dialog) {
                             dialog.show();
@@ -90,6 +92,7 @@
                 document.getElementById('altaDialog').hide();
                 alta(code, name, placas, telefono, pass);
             }
+
             function alta(c, n, p, t, pass){
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
@@ -98,7 +101,13 @@
                     console.log(cadena);
                     var array = cadena.split(',');
                     if(array[0] == 1){  
-                        name = n;
+                        // Datos ingresados al Servidor
+                        //console.log(array[1]);
+                        // Datos guardados en el localStorage 
+                        localStorage.setItem('codigo', c);
+                        localStorage.setItem('usuario', n);
+                        localStorage.setItem('placas', p);
+                        localStorage.setItem('telefono', t);
                         ons.notification.alert("El coche fue registrado correctamente, puede pasar al Estacionamiento.");
                         document.querySelector('#myNavigator').pushPage('maps.html');
                     }
@@ -110,10 +119,17 @@
                 xhttp.open("GET", "http://cuceimobile.tech/Escuela/altaU.php?codigo="+ c + "&nombre=" + n + "&placas=" + p +"&telefono=" + t + "&password=" + pass, true);
                 xhttp.send();
             }
+
             // Código para ocultar el Alert de Alta UDG
             var hideAlertDialog = function() {
             document.getElementById('altaDialog').hide();
             };
+
+            // Código para entrar al index de nuevo y eliminar los datos locales
+            function pushIndex(){
+                document.querySelector('#myNavigator').pushPage('index.html');
+                localStorage.clear();
+            }
         </script>
         <style>
             .toolbar {
@@ -274,13 +290,13 @@
                 <div class="background" style="background-color:black;"></div>
                 <div class="content">
                     <ons-toolbar>
-                        <div class="left"><ons-back-button>Salir</ons-back-button></div>
+                        <div class="left"><ons-back-button onclick="pushIndex()">Salir</ons-back-button></div>
                         <div class="center"><ons-icon size="20px" icon="fa-car" class="white"></ons-icon><label class="white">  Mapa del estacionamiento</label></div>
                     </ons-toolbar>
                     <ons-card style="margin-top: 1.5cm;">
                         <center>HOLA USUARIO<br><i><label id="nameMap"></label></i></center>
                         <script>
-                            document.getElementById("nameMap").innerHTML = name;   
+                            document.getElementById("nameMap").innerHTML = localStorage.getItem('usuario');   
                         </script>
                     </ons-card>
                     <div class="mapouter">
