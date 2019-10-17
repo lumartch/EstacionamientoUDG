@@ -41,7 +41,6 @@
                         code = array[1];
                         name = array[2];
                         career = array[4];
-                        document.querySelector('#myNavigator').pushPage('maps.html');
                         var dialog = document.getElementById('altaDialog');
                         if (dialog) {
                             dialog.show();
@@ -71,7 +70,7 @@
                     ons.notification.alert("Llene los datos correspondientes para dar de alta al usuario.");
                     return;
                 }
-                if(t < 1000000000 || t > 9999999999){
+                if(t.length != 10 ){
                     ons.notification.alert("El formato del Teléfono es el incorrecto, deben ser 10 números.");
                     return;
                 }
@@ -83,7 +82,7 @@
                     ons.notification.alert("Llene los datos correspondientes para dar de alta el coche.");
                     return;
                 }
-                if(telefono < 1000000000 || telefono > 9999999999){
+                if(telefono.length != 10){
                     ons.notification.alert("El formato del Teléfono es el incorrecto, deben ser 10 números.");
                     return;
                 }
@@ -179,18 +178,12 @@
             <ons-page id="splash" >
                 <div class="background" style="background-color:black;"></div>
                 <div class="content">
-                <!--<ons-card>-->
                     <center>
                     <img src="https://www.keybps.com/wp-content/uploads/2018/02/Estacionamiento.png" height="200" width="200"/>
                     <br>
                     <h1><i style="color: cyan;">Park App</i></h1>
-                    </center>
-                <!--</ons-card>
-                <ons-card>-->
-                    <center>
                     <h3><b style="color: cyan;">Bienvenido usuario, registre su coche para <br>pasar al estacionamiento de CUCEI.</b></h3>
                     </center>
-                <!--</ons-card>-->
                 </div>
             </ons-page>
         </template>
@@ -233,7 +226,7 @@
                     </script>
                     <br>
                     <ons-input input-id="inPl" placeholder="Placas" type="text" modifier="underbar" style="color: white;"></ons-input>
-                    <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" style="color:white;" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></ons-input>
+                    <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" style="color:white;" onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10" maxlength="10"></ons-input>
                 </div>
                 <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
                     <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)" style="color:white;">Alta</ons-alert-dialog-button>
@@ -270,7 +263,7 @@
                                 <ons-input input-id="inPlacas" placeholder="Placas" type="text" modifier="underbar"></ons-input>
                             </ons-list-item>
                             <ons-list-item>
-                                <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></ons-input>
+                                <ons-input input-id="inTel" placeholder="Teléfono" type="number" modifier="underbar" onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10" maxlength="10"></ons-input>
                             </ons-list-item>
                             <ons-list-item>
                                     <ons-input input-id="inPass" placeholder="Contraseña/NIP" type="password" modifier="underbar"></ons-input>
