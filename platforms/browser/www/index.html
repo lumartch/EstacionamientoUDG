@@ -93,7 +93,15 @@
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     }
                                     else{
-                                        ons.notification.alert("Usuario o contraseña erronea. Intente de nuevo.");
+                                        var dialog = document.getElementById('alertErrorSession');
+                                        if (dialog) {
+                                            dialog.show();
+                                        } else {
+                                            ons.createElement('alert-error-session.html', { append: true })
+                                            .then(function(dialog) {
+                                                dialog.show();
+                                            });
+                                        }
                                     }
                                 }
                             };
@@ -166,8 +174,13 @@
             }
 
             // Código para ocultar el Alert de Alta UDG
-            var hideAlertDialog = function() {
+            var hideAlertDialogAlta = function() {
             document.getElementById('altaDialog').hide();
+            };
+
+            // Código para ocultar el Alert de Alta UDG
+            var hideAlertDialogError = function() {
+            document.getElementById('alertErrorSession').hide();
             };
 
             // Código para entrar al index de nuevo y eliminar los datos locales
@@ -276,10 +289,27 @@
                 </div>
                 <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
                     <ons-alert-dialog-button onclick="altaUDG(document.getElementById('inPl').value, document.getElementById('inTel').value)" style="color:white;">Alta</ons-alert-dialog-button>
-                    <ons-alert-dialog-button onclick="hideAlertDialog()" style="color:white;">Cancelar</ons-alert-dialog-button>
+                    <ons-alert-dialog-button onclick="hideAlertDialogAlta()" style="color:white;">Cancelar</ons-alert-dialog-button>
                 </div>
             </ons-alert-dialog>
         </template>
+
+        <template id="alert-error-session.html">
+                <ons-alert-dialog id="alertErrorSession" modifier="rowfooter" cancelable animation="default">
+                    <div id="alTitle" class="alert-dialog-title" ><b><h3>Error en inicio de sesión</h3></b></div>
+                    <div class="alert-dialog-content" style="background-color: rgb(26, 26, 26); color:white;">
+                        <center>
+                            Sus credenciales no existen en la base de datos.</br>
+                            ¿Desea crear una nueva cuenta como usuario No UDG?
+                        </center>
+                        <br>
+                    </div>
+                    <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
+                        <ons-alert-dialog-button onclick="document.getElementById('alertErrorSession').hide();document.querySelector('#myNavigator').pushPage('newUser.html');" style="color:white;">Nuevo usuario</ons-alert-dialog-button>
+                        <ons-alert-dialog-button onclick="hideAlertDialogError()" style="color:white;">Cancelar</ons-alert-dialog-button>
+                    </div>
+                </ons-alert-dialog>
+            </template>
 
         <template id="newUser.html">
             <ons-page id="newUser">
