@@ -12,6 +12,9 @@
         <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.2/mapbox-gl.css' rel='stylesheet' />
         <title>Estacionamiento UDG</title>
         <script>
+            // Variables "Globales" para almacenar los datos del usuario UDG
+            var code;
+            var name;
             // Función de carga a la página, sirve como Delay para el Splash Screen
             window.onload=function(){
                 setTimeout(function(){ 
@@ -26,39 +29,83 @@
             }
             // Función para iniciar sesión
             function login(){
-                codigo = document.getElementById("code").value;
-                nip = document.getElementById("pass").value;
+                var codigo = document.getElementById("code").value;
+                var nip = document.getElementById("pass").value;
                 if(codigo == "" || nip == ""){
                     ons.notification.alert("Llene los datos correspondientes para el inicio de sesión.");
                     return;
                 }
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
-                if(xhttp.readyState == 4 && this.status == 200){
-                    var cadena = xhttp.responseText;
-                    var array = cadena.split(',');
-                    if(array[0] == 'A'){  
-                        code = array[1];
-                        name = array[2];
-                        career = array[4];
-                        var dialog = document.getElementById('altaDialog');
-                        if (dialog) {
-                            dialog.show();
+                    if(xhttp.readyState == 4 && this.status == 200){
+                        var cadena = xhttp.responseText;
+                        var array = cadena.split(',');
+                        // Toma el ResponseText y corrobora que sea un alumno
+                        if(array[0] == 'A'){
+                            // 216787787-LUIS FERNANDO MARTINEZ CASTELLANOS-PHK-2308-JG-0123456789-322
+                            // En caso de ser alumno, guarda los datos proporcionados por él y se busca por medio de CODIGO y NOMBRE, para saber
+                            // si el usuario existe dentro de la BD
+                            code = array[1];
+                            name = array[2];
+                            var xhttpLoginUDG = new XMLHttpRequest();
+                            xhttpLoginUDG.onreadystatechange = function(){
+                                if(xhttpLoginUDG.readyState == 4 && this.status == 200){
+                                    var cadena = xhttpLoginUDG.responseText;
+                                    // En caso de existir el usuario ya registrado dentro de la BD, se loggea automaticamente
+                                    if(cadena != 0){
+                                        // Se toma un JSON que regresa el servidor y se activa el LocalStorage del navegador.
+                                        var parseJson = JSON.parse(cadena);
+                                        localStorage.setItem('codigo', parseJson.codigo);
+                                        localStorage.setItem('usuario', parseJson.nombre);
+                                        localStorage.setItem('placas', parseJson.placas);
+                                        localStorage.setItem('telefono', parseJson.telefono);
+                                        document.querySelector('#myNavigator').pushPage('maps.html');
+                                    } else {
+                                        //En caso de ser usuario UDG pero no existir en la BD, se le muestra un PopUp para ingresar sus datos
+                                        var dialog = document.getElementById('altaDialog');
+                                        if (dialog) {
+                                            dialog.show();
+                                        } else {
+                                            ons.createElement('alert-dialog.html', { append: true })
+                                            .then(function(dialog) {
+                                                dialog.show();
+                                            });
+                                        }
+                                    }
+                                }
+                            };
+                            xhttpLoginUDG.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/loginUDG.php?codigo="+ code + "&nombre=" + name, true);
+                            xhttpLoginUDG.send();
                         } else {
-                            ons.createElement('alert-dialog.html', { append: true })
-                            .then(function(dialog) {
-                                dialog.show();
-                            });
+                            // En dado caso de no ser alumno UDG, se busca por medio de Codigo y NIP
+                            // 3777-Fulanito-GHJ-95-JK-9876543210-123123
+                            var xhttpLoginNoUDG = new XMLHttpRequest();
+                            xhttpLoginNoUDG.onreadystatechange = function(){
+                                if(xhttpLoginNoUDG.readyState == 4 && this.status == 200){
+                                    var cadena = xhttpLoginNoUDG.responseText;
+                                    if(cadena != 0){
+                                        // Se toma un JSON que regresa el servidor y se activa el LocalStorage del navegador.
+                                        var parseJson = JSON.parse(cadena);
+                                        localStorage.setItem('codigo', parseJson.codigo);
+                                        localStorage.setItem('usuario', parseJson.nombre);
+                                        localStorage.setItem('placas', parseJson.placas);
+                                        localStorage.setItem('telefono', parseJson.telefono);
+                                        document.querySelector('#myNavigator').pushPage('maps.html');
+                                    }
+                                    else{
+                                        ons.notification.alert("Usuario o contraseña erronea. Intente de nuevo.");
+                                    }
+                                }
+                            };
+                            xhttpLoginNoUDG.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/loginNoUDG.php?codigo="+ codigo + "&nip=" + nip, true);
+                            xhttpLoginNoUDG.send();
                         }
                     }
-                    else {
-                        ons.notification.alert("Usuario o contraseña erronea. Intente de nuevo.");
-                    }
-                }
                 };
                 xhttp.open("GET", "http://dcc.000webhostapp.com/2018/datosudeg.php?codigo="+ codigo + "&nip=" + nip, true);
                 xhttp.send();
             }
+
             // Función interfaz para dar de alta a un usuario nuevo
             function altaNuevo(){
                 var c = document.getElementById("inCode").innerHTML;
@@ -70,12 +117,13 @@
                     ons.notification.alert("Llene los datos correspondientes para dar de alta al usuario.");
                     return;
                 }
-                if(t.length != 10 ){
+                if(t.length != 10){
                     ons.notification.alert("El formato del Teléfono es el incorrecto, deben ser 10 números.");
                     return;
                 }
                 alta(c, n, p, t, pass);
             }
+
             // Función interfaz para dar de alta a un usuario UDG
             function altaUDG(placas, telefono){
                 if(placas == "" || telefono == "" ){
@@ -100,8 +148,6 @@
                     console.log(cadena);
                     var array = cadena.split(',');
                     if(array[0] == 1){  
-                        // Datos ingresados al Servidor
-                        //console.log(array[1]);
                         // Datos guardados en el localStorage 
                         localStorage.setItem('codigo', c);
                         localStorage.setItem('usuario', n);
@@ -126,8 +172,8 @@
 
             // Código para entrar al index de nuevo y eliminar los datos locales
             function pushIndex(){
-                document.querySelector('#myNavigator').pushPage('index.html');
                 localStorage.clear();
+                document.querySelector('#myNavigator').pushPage('index.html');
             }
         </script>
         <style>
@@ -288,10 +334,10 @@
                     </ons-toolbar>
                     <ons-card style="margin-top: 1.5cm;">
                         <center>HOLA USUARIO<br><i><label id="nameMap"></label></i></center>
-                        <script>
-                            document.getElementById("nameMap").innerHTML = localStorage.getItem('usuario');   
-                        </script>
                     </ons-card>
+                    <script>
+                        document.getElementById("nameMap").innerHTML = localStorage.getItem('usuario');   
+                    </script>
                     <div class="mapouter">
                         <div class="gmap_canvas">
                                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d933.3412607245299!2d-103.32553151192371!3d20.654722554036248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b23abb6f2e57%3A0xc3806926efc93100!2sOl%C3%ADmpica%2C%2044430%20Guadalajara%2C%20Jalisco!5e0!3m2!1sen!2smx!4v1570555170670!5m2!1sen!2smx" width="500" height="500" frameborder="0" style="border:0;" >
