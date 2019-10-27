@@ -59,6 +59,7 @@
                                         localStorage.setItem('usuario', parseJson.nombre);
                                         localStorage.setItem('placas', parseJson.placas);
                                         localStorage.setItem('telefono', parseJson.telefono);
+                                        console.log(localStorage.getItem('usuario'));
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     } else {
                                         //En caso de ser usuario UDG pero no existir en la BD, se le muestra un PopUp para ingresar sus datos
@@ -78,7 +79,8 @@
                             xhttpLoginUDG.send();
                         } else {
                             // En dado caso de no ser alumno UDG, se busca por medio de Codigo y NIP
-                            // 3777-Fulanito-GHJ-95-JK-9876543210-123123
+                            // 3777->Fulanito->GHJ-95-JK->9876543210->123123
+                            // 2719->Sultanin->QWS-23-GJ->4545659878->2323
                             var xhttpLoginNoUDG = new XMLHttpRequest();
                             xhttpLoginNoUDG.onreadystatechange = function(){
                                 if(xhttpLoginNoUDG.readyState == 4 && this.status == 200){
@@ -165,7 +167,7 @@
                         document.querySelector('#myNavigator').pushPage('maps.html');
                     }
                     else {
-                        ons.notification.alert("ERROR.");
+                        ons.notification.alert("Error al insertar en la base de datos");
                     }
                 }
                 };
