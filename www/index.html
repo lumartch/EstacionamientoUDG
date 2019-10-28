@@ -177,18 +177,49 @@
 
             // Código para ocultar el Alert de Alta UDG
             var hideAlertDialogAlta = function() {
-            document.getElementById('altaDialog').hide();
+                document.getElementById('altaDialog').hide();
             };
 
             // Código para ocultar el Alert de Alta UDG
             var hideAlertDialogError = function() {
-            document.getElementById('alertErrorSession').hide();
+                document.getElementById('alertErrorSession').hide();
             };
 
             // Código para entrar al index de nuevo y eliminar los datos locales
             function pushIndex(){
                 localStorage.clear();
                 document.querySelector('#myNavigator').pushPage('index.html');
+            }
+            
+            // Código para generar código aleatorio para el nuevo usuario
+            var min = Math.ceil(1000);
+            var max = Math.floor(5000);
+            var res = Math.floor(Math.random() * (max - min + 1)) + min;
+            function nuevoUsuario(){
+                var xhttpRandCode = new XMLHttpRequest();
+                xhttpRandCode.onreadystatechange = function(){
+                    if(xhttpRandCode.readyState == 4 && this.status == 200){
+                        var cadena = xhttpRandCode.responseText;
+                        if(cadena == 1){
+                            // Se toma un JSON que regresa el servidor y se activa el LocalStorage del navegador.
+                            existe = true;
+                            console.log("Existe el código... "+ res + " Generando uno nuevo...");
+                            res = Math.floor(Math.random() * (max - min + 1)) + min;
+                            nuevoUsuario();
+                        } else {
+                            existe = false;
+                            console.log("Nuevo código: " + res);
+                            document.querySelector('#myNavigator').pushPage('newUser.html');
+                        }
+                    }
+                };
+                xhttpRandCode.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/checkCode.php?codigo=" + res, true);
+                xhttpRandCode.send();
+            }
+            // Se genera un nuevo código único
+            function nuevoUsuarioError(){
+                hideAlertDialogError();
+                nuevoUsuario();
             }
         </script>
         <style>
@@ -270,7 +301,7 @@
                         <br><br>
                         <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
                         <br><br>
-                        <label onclick="document.querySelector('#myNavigator').pushPage('newUser.html');"><h4><b>Nuevo usuario</b></h4></label>
+                        <label onclick="nuevoUsuario()"><h4><b>Nuevo usuario</b></h4></label>
                     </center>
                 </ons-card>
             </div>
@@ -307,8 +338,8 @@
                         <br>
                     </div>
                     <div class="alert-dialog-footer" style="background-color: rgb(13, 13, 13); color:white;">
-                        <ons-alert-dialog-button onclick="document.getElementById('alertErrorSession').hide();document.querySelector('#myNavigator').pushPage('newUser.html');" style="color:white;">Nuevo usuario</ons-alert-dialog-button>
-                        <ons-alert-dialog-button onclick="hideAlertDialogError()" style="color:white;">Cancelar</ons-alert-dialog-button>
+                        <ons-alert-dialog-button onclick="nuevoUsuarioError();" style="color:white;">Nuevo usuario</ons-alert-dialog-button>
+                        <ons-alert-dialog-button onclick="document.getElementById('alertErrorSession').hide();" style="color:white;">Cancelar</ons-alert-dialog-button>
                     </div>
                 </ons-alert-dialog>
             </template>
@@ -328,10 +359,7 @@
                             <ons-list-item>
                                 <label class="white">Código: </label> <label id="inCode" class="white"></label>
                                 <script>
-                                    var min = Math.ceil(1000);
-                                    var max = Math.floor(5000);
-                                    var res =  Math.floor(Math.random() * (max - min + 1)) + min;
-                                    document.getElementById("inCode").innerHTML = res.toString();
+                                    document.getElementById("inCode").innerHTML = this.res.toString();
                                 </script>
                             </ons-list-item>
                             <ons-list-item>
