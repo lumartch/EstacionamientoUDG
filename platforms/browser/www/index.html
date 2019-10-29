@@ -28,13 +28,14 @@
                 },3500)
             }
             // Función para iniciar sesión
-            function login(){
-                var codigo = document.getElementById("code").value;
-                var nip = document.getElementById("pass").value;
+            function login(c, n){
+                var codigo = c;
+                var nip = n;
                 if(codigo == "" || nip == ""){
                     ons.notification.alert("Llene los datos correspondientes para el inicio de sesión.");
                     return;
                 }
+                console.log(codigo + " -> " +nip);
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
                     if(xhttp.readyState == 4 && this.status == 200){
@@ -47,6 +48,7 @@
                             // si el usuario existe dentro de la BD
                             code = array[1];
                             name = array[2];
+                            var nombre = array[2];
                             var xhttpLoginUDG = new XMLHttpRequest();
                             xhttpLoginUDG.onreadystatechange = function(){
                                 if(xhttpLoginUDG.readyState == 4 && this.status == 200){
@@ -72,15 +74,18 @@
                                                 dialog.show();
                                             });
                                         }
+                                        document.getElementById("code").value = "";
+                                        document.getElementById("pass").value = "";
                                     }
                                 }
                             };
-                            xhttpLoginUDG.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/loginUDG.php?codigo="+ code + "&nombre=" + name, true);
+                            xhttpLoginUDG.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/loginUDG.php?codigo="+ codigo + "&nombre=" + nombre, true);
                             xhttpLoginUDG.send();
                         } else {
                             // En dado caso de no ser alumno UDG, se busca por medio de Codigo y NIP
                             // 3777->Fulanito->GHJ-95-JK->9876543210->123123
                             // 2719->Sultanin->QWS-23-GJ->4545659878->2323
+                            // 3029->Fulanita->PG-34-GH->3216549780->1019
                             var xhttpLoginNoUDG = new XMLHttpRequest();
                             xhttpLoginNoUDG.onreadystatechange = function(){
                                 if(xhttpLoginNoUDG.readyState == 4 && this.status == 200){
@@ -188,7 +193,10 @@
             // Código para entrar al index de nuevo y eliminar los datos locales
             function pushIndex(){
                 localStorage.clear();
-                document.querySelector('#myNavigator').pushPage('index.html');
+                name = "";
+                code = "";
+                location.reload();
+                //document.querySelector('#myNavigator').pushPage('index.html');
             }
             
             // Código para generar código aleatorio para el nuevo usuario
@@ -201,7 +209,6 @@
                     if(xhttpRandCode.readyState == 4 && this.status == 200){
                         var cadena = xhttpRandCode.responseText;
                         if(cadena == 1){
-                            // Se toma un JSON que regresa el servidor y se activa el LocalStorage del navegador.
                             existe = true;
                             console.log("Existe el código... "+ res + " Generando uno nuevo...");
                             res = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -295,18 +302,21 @@
                 </ons-card>
                 <ons-card>
                     <center>
-                        <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar"></ons-input>
+                        <ons-input input-id="code" placeholder="Código" type="text" modifier="underbar" value=""></ons-input>
                         <br><br>
-                        <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar"></ons-input>
+                        <ons-input input-id="pass" placeholder="NIP" type="password" modifier="underbar" value=""></ons-input>
                         <br><br>
-                        <ons-button id="enviarButton" modifier="material" onclick="login()">Entrar</ons-button>
+                        <ons-button id="enviarButton" modifier="material" onclick='login(document.getElementById("code").value, document.getElementById("pass").value)'>Entrar</ons-button>
                         <br><br>
                         <label onclick="nuevoUsuario()"><h4><b>Nuevo usuario</b></h4></label>
                     </center>
                 </ons-card>
             </div>
             </ons-page>
+            
         </template>
+
+        
 
         <template id="alert-dialog.html">
             <ons-alert-dialog id="altaDialog" modifier="rowfooter" cancelable animation="default">
