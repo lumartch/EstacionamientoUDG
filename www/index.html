@@ -8,8 +8,6 @@
         <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
         <link rel="shortcut icon" type="image/x-icon" href="https://www.mexicoescultura.com/galerias/espacios/principal/udg.jpg" />
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.2/mapbox-gl.js'></script>
-        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.2/mapbox-gl.css' rel='stylesheet' />
         <title>Estacionamiento UDG</title>
         <script>
             // Variables "Globales" para almacenar los datos del usuario UDG
@@ -410,8 +408,8 @@
                     </script>
                     <div class="mapouter">
                         <div class="gmap_canvas">
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d933.3412607245299!2d-103.32553151192371!3d20.654722554036248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b23abb6f2e57%3A0xc3806926efc93100!2sOl%C3%ADmpica%2C%2044430%20Guadalajara%2C%20Jalisco!5e0!3m2!1sen!2smx!4v1570555170670!5m2!1sen!2smx" width="500" height="500" frameborder="0" style="border:0;" >
-                                </iframe>
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d933.3412607245299!2d-103.32553151192371!3d20.654722554036248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b23abb6f2e57%3A0xc3806926efc93100!2sOl%C3%ADmpica%2C%2044430%20Guadalajara%2C%20Jalisco!5e0!3m2!1sen!2smx!4v1570555170670!5m2!1sen!2smx" width="500" height="500" frameborder="0" style="border:0;" >
+                            </iframe>
                         </div>
                         <style>
                         .mapouter{
@@ -428,7 +426,28 @@
                             }
                         </style>
                     </div>
-                </div>  
+                </div>
+
+                <script>
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function(){
+                    if(xhttp.readyState == 4 && this.status == 200){
+                        var cadena = xhttp.responseText;
+                        if(cadena != 1){  
+                            var parseJSONConsulta = JSON.parse(cadena);
+                            parseJSONConsulta.forEach(function(element) {
+                                var parseJSONLugarE = JSON.parse(element);
+                                console.log(parseJSONLugarE);
+                            });
+                        }
+                        else {
+                        }
+                    }
+                    };
+                    xhttp.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/parking_spot.php", true);
+                    xhttp.send();
+                </script>  
+
             </ons-page>
         </template>
         
