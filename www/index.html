@@ -79,6 +79,8 @@
                                         localStorage.setItem('usuario', parseJson.nombre);
                                         localStorage.setItem('placas', parseJson.placas);
                                         localStorage.setItem('telefono', parseJson.telefono);
+                                        localStorage.setItem('lat', 0);
+                                        localStorage.setItem('lon', 0);
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     } else {
                                         //En caso de ser usuario UDG pero no existir en la BD, se le muestra un PopUp para ingresar sus datos
@@ -114,6 +116,8 @@
                                         localStorage.setItem('usuario', parseJson.nombre);
                                         localStorage.setItem('placas', parseJson.placas);
                                         localStorage.setItem('telefono', parseJson.telefono);
+                                        localStorage.setItem('lat', 0);
+                                        localStorage.setItem('lon', 0);
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     }
                                     else{
@@ -184,6 +188,8 @@
                         localStorage.setItem('usuario', n);
                         localStorage.setItem('placas', p);
                         localStorage.setItem('telefono', t);
+                        localStorage.setItem('lat', 0);
+                        localStorage.setItem('lon', 0);
                         ons.notification.alert("El coche fue registrado correctamente, puede pasar al Estacionamiento.");
                         document.querySelector('#myNavigator').pushPage('maps.html');
                     }
@@ -426,7 +432,53 @@
                         }
                     </style>
                     <div id="map"></div>
+                    <ons-card> <center><ons-button id="gps" modifier="material" onclick="gpsAlta()" ></ons-button> </center> </ons-card>
                     <script>
+                        document.addEventListener("deviceready", onDeviceReady, false);
+                        // Cordova is ready
+                        function onDeviceReady() {
+                            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                        }
+
+                        // onSuccess Geolocation
+                        function onSuccess(position){
+                            alert('Longitud: ' + position.coords.longitude + '\n' +
+                                'Latitud: ' + position.coords.latitude + '\n' );
+                            localStorage.setItem('lat', position.coords.latitude);
+                            localStorage.setItem('lon', position.coords.longitude);
+                        }
+
+                        // onError Callback receives a PositionError object
+                        function onError(error) {
+                            alert('code: '    + error.code    + '\n' +
+                                    'message: ' + error.message + '\n');
+                        }
+
+                        // Condición para crear el innerHTML por si no está registrado por GPS el coche
+                        if(localStorage.getItem('lat') == 0 && localStorage.getItem('lon') == 0){
+                            document.getElementById("gps").innerHTML = "Registrar por GPS";
+                            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                        }
+                        else{
+                            document.getElementById("gps").innerHTML = "Salir";
+                        }
+
+                        // Función para actualizar la posición actual del 
+                        function gpsAlta(){
+                            if(localStorage.getItem('lat') != "0" && localStorage.getItem('lon') != "0"){
+                                document.getElementById("gps").innerHTML = "Salir";                                
+                                localStorage.setItem('lat', 0);
+                                localStorage.setItem('lon', 0);
+                                lugares_e();
+                                initMap();
+                            }
+                            else{
+                                document.getElementById("gps").innerHTML = "Registrar por GPS";
+                                lugares_e();
+                                initMap();
+                            }
+                        }
+                        // Construcción del mapa
                         function initMap() {
                             var uluru = { lat: 20.6540263, lng: -103.3246417 };
                             var map = new google.maps.Map(
@@ -437,7 +489,7 @@
                                 marker = new google.maps.Marker({position: uluru, map: map, title: lugares[i].placas,  animation: google.maps.Animation.DROP});
                                 marker.setMap(map);
                             }
-                        } 
+                        }  
                     </script>
                     <script async defer src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"></script>
                 </div>
