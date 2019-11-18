@@ -10,30 +10,9 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
         <title>Estacionamiento UDG</title>
         <script>
-
             // Variables "Globales" para almacenar los datos del usuario UDG
             var code;
             var name;
-            // Función para tomar los lugares actuales del estacionamiento
-            var lugares = [];
-            function lugares_e(){
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function(){
-                    if(xhttp.readyState == 4 && this.status == 200) {
-                        var cadena = xhttp.responseText;
-                        if(cadena != 1){  
-                            var json = JSON.parse(cadena);
-                            json.forEach(element => {
-                                var parse = JSON.parse(element);
-                                lugares.push(parse);
-                            });
-                        }
-                    }
-                };
-                xhttp.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/parking_spot.php", true);
-                xhttp.send();
-            } 
-            lugares_e();
             // Función de carga a la página, sirve como Delay para el Splash Screen
             window.onload = function(){
                 setTimeout(function(){ 
@@ -79,8 +58,6 @@
                                         localStorage.setItem('usuario', parseJson.nombre);
                                         localStorage.setItem('placas', parseJson.placas);
                                         localStorage.setItem('telefono', parseJson.telefono);
-                                        localStorage.setItem('lat', 0);
-                                        localStorage.setItem('lon', 0);
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     } else {
                                         //En caso de ser usuario UDG pero no existir en la BD, se le muestra un PopUp para ingresar sus datos
@@ -116,8 +93,6 @@
                                         localStorage.setItem('usuario', parseJson.nombre);
                                         localStorage.setItem('placas', parseJson.placas);
                                         localStorage.setItem('telefono', parseJson.telefono);
-                                        localStorage.setItem('lat', 0);
-                                        localStorage.setItem('lon', 0);
                                         document.querySelector('#myNavigator').pushPage('maps.html');
                                     }
                                     else{
@@ -188,8 +163,6 @@
                         localStorage.setItem('usuario', n);
                         localStorage.setItem('placas', p);
                         localStorage.setItem('telefono', t);
-                        localStorage.setItem('lat', 0);
-                        localStorage.setItem('lon', 0);
                         ons.notification.alert("El coche fue registrado correctamente, puede pasar al Estacionamiento.");
                         document.querySelector('#myNavigator').pushPage('maps.html');
                     }
@@ -218,7 +191,6 @@
                 name = "";
                 code = "";
                 location.reload();
-                //document.querySelector('#myNavigator').pushPage('index.html');
             }
             
             // Código para generar código aleatorio para el nuevo usuario
@@ -427,25 +399,62 @@
                     </script>
                     <style>
                        #map {
-                         height: 80%;  /* The height is 400 pixels */
+                         height: 70%;  /* The height is 400 pixels */
                          width: 100%;  /* The width is the width of the web page */
                         }
                     </style>
                     <div id="map"></div>
-                    <ons-card> <center><ons-button id="gps" modifier="material" onclick="gpsAlta()" ></ons-button> </center> </ons-card>
+                    <ons-card> <center><ons-button id="gps" modifier="material" onclick="gpsAlta()" >Registrar GPS/Salir</ons-button> </center> </ons-card>
                     <script>
-                        document.addEventListener("deviceready", onDeviceReady, false);
-                        // Cordova is ready
-                        function onDeviceReady() {
-                            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+                        function gps_delete(placas){
+                            var xhttp = new XMLHttpRequest();
+                            var url = "https://lumartch.000webhostapp.com/estacionamientoUDG/delete_gps.php?placas=" + placas;
+                            url = encodeURI(url);
+                            xhttp.onreadystatechange = function(){
+                                if(xhttp.readyState == 4 && this.status == 200) {
+                                    var r = xhttp.responseText;
+                                    if(r == 1){
+                                        alert("¡Gracias por visitar CUCEI!\n¡Vuelva pronto!");
+                                        initMap();
+                                    }
+                                    else{
+                                        alert("Hubo un terrible error D:");
+                                    }
+                                }
+                            };
+                            xhttp.open("GET", url, true);
+                            xhttp.send();
                         }
+
+                        function gps_insert(placas, la, lo){
+                            var xhttp = new XMLHttpRequest();
+                            var url = "https://lumartch.000webhostapp.com/estacionamientoUDG/insert_gps.php?placas=" + placas + "&lat=" + la + "&lon=" + lo;
+                            xhttp.onreadystatechange = function(){
+                                if(xhttp.readyState == 4 && this.status == 200) {
+                                    var r = xhttp.responseText;
+                                    if(r == 1){
+                                        alert("¡El GPS fue guardado exitosamente!");
+                                        initMap();
+                                    }
+                                    else if(r == 2){
+                                        alert("Es imposible registrarse en un lugar ocupado.\nBusque otro lugar.");
+                                    }
+                                    else {
+                                        gps_delete(placas);
+                                    }
+                                }
+                            };
+                            xhttp.open("GET", url, true);
+                            xhttp.send();
+                        } 
 
                         // onSuccess Geolocation
                         function onSuccess(position){
-                            alert('Longitud: ' + position.coords.longitude + '\n' +
-                                'Latitud: ' + position.coords.latitude + '\n' );
-                            localStorage.setItem('lat', position.coords.latitude);
-                            localStorage.setItem('lon', position.coords.longitude);
+                            var p = localStorage.getItem('placas');
+                            var la = position.coords.latitude;
+                            var lo = position.coords.longitude;
+                            gps_insert(p, la, lo);
                         }
 
                         // onError Callback receives a PositionError object
@@ -453,43 +462,54 @@
                             alert('code: '    + error.code    + '\n' +
                                     'message: ' + error.message + '\n');
                         }
-
-                        // Condición para crear el innerHTML por si no está registrado por GPS el coche
-                        if(localStorage.getItem('lat') == 0 && localStorage.getItem('lon') == 0){
-                            document.getElementById("gps").innerHTML = "Registrar por GPS";
+                        // Función para actualizar la posición actual del 
+                        function gpsAlta() {
+                            lugares = [];
+                            ons.notification.alert("Estamos localizando su vehiculo con GPS... Espere la notificación de alta.");
                             navigator.geolocation.getCurrentPosition(onSuccess, onError);
                         }
-                        else{
-                            document.getElementById("gps").innerHTML = "Salir";
-                        }
-
-                        // Función para actualizar la posición actual del 
-                        function gpsAlta(){
-                            if(localStorage.getItem('lat') != "0" && localStorage.getItem('lon') != "0"){
-                                document.getElementById("gps").innerHTML = "Salir";                                
-                                localStorage.setItem('lat', 0);
-                                localStorage.setItem('lon', 0);
-                                lugares_e();
-                                initMap();
-                            }
-                            else{
-                                document.getElementById("gps").innerHTML = "Registrar por GPS";
-                                lugares_e();
-                                initMap();
-                            }
-                        }
                         // Construcción del mapa
+                        var map;
+                        var marker;
                         function initMap() {
                             var uluru = { lat: 20.6540263, lng: -103.3246417 };
-                            var map = new google.maps.Map(
+                            map = new google.maps.Map(
                                         document.getElementById('map'), {zoom: 18, center: uluru});
-                            var i = 0;
-                            for(i = 0; i < lugares.length; i++){
-                                uluru = {lat: parseFloat(lugares[i].lat), lng: parseFloat(lugares[i].lon)};
-                                marker = new google.maps.Marker({position: uluru, map: map, title: lugares[i].placas,  animation: google.maps.Animation.DROP});
-                                marker.setMap(map);
-                            }
-                        }  
+                            fillMap();
+                        }
+                        
+                        function fillMap(){
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function(){
+                                if(xhttp.readyState == 4 && this.status == 200) {
+                                    var cadena = xhttp.responseText;
+                                    if(cadena != 1){  
+                                        var json = JSON.parse(cadena);
+                                        json.forEach(element => {
+                                            var parse = JSON.parse(element);
+                                            var uluru = {lat: parseFloat(parse.lat), lng: parseFloat(parse.lon)};
+                                            placeMarker(uluru, parse.placas);
+                                        });
+                                    }
+                                }
+                            };
+                            xhttp.open("GET", "https://lumartch.000webhostapp.com/estacionamientoUDG/parking_spot.php", true);
+                            xhttp.send();
+                        }
+
+                        function placeMarker(location, info) {
+                            marker = new google.maps.Marker({
+                                position: location,
+                                label: {
+                                    text: info,
+                                    color: "black",
+                                    fontWeight: "bold",
+                                    fontSize: "16px"
+                                }, 
+                                map: map,
+                                animation: google.maps.Animation.DROP
+                            });
+                        }
                     </script>
                     <script async defer src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"></script>
                 </div>
